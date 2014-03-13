@@ -1,0 +1,140 @@
+#!/bin/bash
+#
+#                    The Bold Team
+#
+#  This file is distributed under the New BSD License.
+#  See LICENSE for details.
+#
+# Author: Luba Tang <luba@skymizer.com>
+#
+# Design Pattern - Builder, using BASH
+# 0. watch configuration
+# 1. ask name
+# 2. ask email
+# 3. ask file type
+# 4. ask deployment
+# 5. ask file name
+# 6. copy templates
+# 7. replace the keywords
+
+############################
+# Variable Directory
+############################
+BOLD_CONFIG_DIR=${HOME}/.boldrc
+AUTHOR=
+EMAIL=
+CLASS_NAME=
+BRIEF=
+FILE_TYPE=
+DEPLOYMENT=
+
+############################
+# 0. watch configuration
+############################
+if [ -d "${BOLD_CONFIG_DIR}" ]; then
+  if [ -f "${BOLD_CONFIG_DIR}/config" ]; then
+    source ${BOLD_CONFIG_DIR}/config
+  fi
+else
+  mkdir ${BOLD_CONFIG_DIR}
+fi
+
+############################
+# 1. ask name
+############################
+if [ -z "${AUTHOR}" ]; then
+  echo -n "name? ";
+  read AUTHOR
+  echo "AUTHOR=\"${AUTHOR}\"" >> ${BOLD_CONFIG_DIR}/config
+fi
+
+############################
+# 2. ask email
+############################
+if [ -z "${EMAIL}" ]; then
+  echo -n "e-mail? ";
+  read EMAIL
+  echo "EMAIL=\"${EMAIL}\"" >> ${BOLD_CONFIG_DIR}/config
+fi
+
+############################
+# 3. ask file type
+############################
+echo "What type of files you want to create?";
+echo " 1) normal source code"
+echo " 2) test case"
+
+while [ -z "${FILE_TYPE}" ]; do
+  echo -n "your choice? ";
+  read FILE_TYPE
+
+  case "$FILE_TYPE" in
+    1 ) source ${BOLDTOP}/scripts/normal_files.sh;
+      FILE_TYPE="normal";
+      ;;
+    2 ) source ${BOLDTOP}/scripts/test_files.sh;
+      FILE_TYPE="testcase";
+      ;;
+    * ) FILE_TYPE="" ;;
+  esac
+done
+
+############################
+# 4. ask deployment
+############################
+if [ "${FILE_TYPE}" = "normal" ]; then
+  echo "Where you what to deploy?";
+  echo " 1) ADT"
+  echo " 2) Config"
+  echo " 3) Language"
+  echo " 4) Option"
+  echo " 5) Support"
+  echo " 6) Thread"
+
+  while [ -z "${DEPLOYMENT}" ]; do
+    echo -n "your choice? ";
+    read DEPLOYMENT
+
+    case "${DEPLOYMENT}" in
+      1 ) DEPLOYMENT="ADT";;
+      2 ) DEPLOYMENT="Config";;
+      3 ) DEPLOYMENT="Language";;
+      4 ) DEPLOYMENT="Option";;
+      5 ) DEPLOYMENT="Support";;
+      6 ) DEPLOYMENT="Thread";;
+      * ) DEPLOYMENT="";;
+    esac
+  done
+fi
+
+############################
+# 5. ask file name
+############################
+ask_filename
+read CLASS_NAME
+
+ask_brief ${CLASS_NAME}
+read BRIEF
+
+############################
+# 6. copy templates
+############################
+TARGET_FILE=$(copy_template_header ${CLASS_NAME} ${DEPLOYMENT})
+
+# replace the keywords of header
+replace_author  ${TARGET_FILE} ${AUTHOR}
+repalce_email ${TARGET_FILE} ${EMAIL}
+replace_class ${TARGET_FILE} ${CLASS_NAME} ${DEPLOYMENT}
+replace_brief ${TARGET_FILE} ${BRIEF}
+
+# copy the templates of implementation
+TARGET_FILE=$(copy_template_impl ${CLASS_NAME} ${DEPLOYMENT})
+
+############################
+# 7. replace the keywords
+############################
+replace_author  ${TARGET_FILE} ${AUTHOR}
+repalce_email ${TARGET_FILE} ${EMAIL}
+replace_class ${TARGET_FILE} ${CLASS_NAME}  ${DEPLOYMENT}
+replace_brief ${TARGET_FILE} ${BRIEF}
+
