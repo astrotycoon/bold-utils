@@ -14,7 +14,7 @@ dnl AC_INIT(PKG_NAME, BUILD_VERSION, BUG_REPORTER)
 AC_INIT([Bold],[newbabe],[bold-dev@googlegroups.com])
 AC_PREREQ(2.59)
 
-AC_CONFIG_SRCDIR([COPYRIGHT])
+AC_CONFIG_SRCDIR([LICENSE])
 AC_CONFIG_AUX_DIR([scripts])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -56,7 +56,6 @@ CXX_FLAG_CHECK([-Wno-variadic-macros])
 SETUP_CONFIG_HEADER
 AC_CONFIG_HEADER(include/bold/Config/Config.h)
 AC_CONFIG_HEADER(include/bold/Support/DataTypes.h)
-AC_CONFIG_HEADER(utils/protobuf/config.h)
 
 ####################
 # Check for types
@@ -72,7 +71,7 @@ CHECK_PTHREAD
 CHECK_ZLIB
 CHECK_ENABLE_UNITTEST
 CHECK_ENABLE_OPTIMIZE
-CHECK_SKYTEST
+CHECK_PAT
 
 DX_INIT_DOXYGEN([bold], [doxygen.cfg], [docs])
 DX_DOT_FEATURE(OFF)
@@ -91,10 +90,6 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([include/Makefile])
 AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([tools/Makefile])
-AC_CONFIG_FILES([tools/cflags_gen/Makefile])
 AC_CONFIG_FILES([tools/bold/Makefile])
-AC_CONFIG_FILES([utils/Makefile])
-AC_CONFIG_FILES([utils/protobuf/Makefile])
-AC_CONFIG_FILES([utils/protobuf/src/Makefile])
 
 AC_OUTPUT
