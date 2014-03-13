@@ -31,13 +31,13 @@ endif
 
 AM_CPPFLAGS = ${SKY_INCLUDES} ${SKY_CPPFLAGS} ${ANDROID_CPPFLAGS}
 
-skymizerdir = $(pkgdatadir)/tools
+bolddir = $(pkgdatadir)/tools
 
-skymizer_PROGRAMS = skymizer
+bold_PROGRAMS = bold
 
-skymizer_LDFLAGS = ${SKYLDFLAGS}
+bold_LDFLAGS = ${SKYLDFLAGS}
 
-skymizer_LDADD = -lskymizer
+bold_LDADD = -lbold
 
-dist_skymizer_SOURCES = ${SKY_SOURCES}
+dist_bold_SOURCES = ${SKY_SOURCES}
 
