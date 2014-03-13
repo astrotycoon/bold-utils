@@ -1,0 +1,47 @@
+------------------------------------------------------------------------------
+                            The Bold Project
+------------------------------------------------------------------------------
+============
+Introduction
+============
+  Bold is an optimizing linker infrastruction.
+
+========================
+Compilation Instructions
+========================
+  The simplest way to compile this package is:
+
+--------------
+Build Bold
+--------------
+  Dance with standard auto-tools.
+
+  1.  clone Bold from the repositry
+      git clone https://[account]@code.google.com/p/bold-utils/
+
+      visit http://code.google.com/p/bold-utils/source/checkout for details.
+
+  2.  Type `cd ${BOLD}' to the directory containing the source code.
+
+  3.  If there are no `configure' shell script in the directory, type
+      `./autogen.sh' to generate `configure' script.
+
+  4.  Type `./configure` to configure the package for your system. See INSTALL
+      for more details.
+      ./configure --prefix=${BOLD_INSTALL} \
+
+  5.  Type `make` to compile the package
+
+  6.  Type `make install` to install the package into your system.
+
+===================
+Directory Structure
+===================
+README               - this document
+Makefile.am          - input of automake
+configure.ac         - input of autoconf
+src/                 - source code of verification tool
+include/             - include file, exported interface
+lib/                 - source code of exported interface
+tools/               - source code of tools
+test/                - placeholder of testcases
