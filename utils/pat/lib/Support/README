@@ -1,0 +1,12 @@
+Proposal of WatchDog timer
+
+\section{Abstract}
+I propose a new watch dog timer to allow nested PERFORM.
+
+\section{Motivation}
+
+PERFORM {
+  PERFORM {
+  }
+}
+

@@ -91,5 +91,8 @@ AC_CONFIG_FILES([include/Makefile])
 AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([tools/Makefile])
 AC_CONFIG_FILES([tools/bold/Makefile])
+AC_CONFIG_FILES([utils/Makefile])
+AC_CONFIG_FILES([utils/pat/Makefile])
+AC_CONFIG_FILES([utils/pat/lib/Makefile])
 
 AC_OUTPUT
