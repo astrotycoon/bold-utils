@@ -4,7 +4,6 @@
 //
 //  This file is distributed under the New BSD License.
 //  See LICENSE for details.
-//  See LICENSE for details.
 //
 //===----------------------------------------------------------------------===//
 #ifndef BOLD_ADT_ROPE_H
