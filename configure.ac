@@ -54,6 +54,7 @@ CXX_FLAG_CHECK([-Wno-variadic-macros])
 ####################
 # Check for libraries
 SETUP_CONFIG_HEADER
+SETUP_PAT
 AC_CONFIG_HEADER(include/bold/Config/Config.h)
 AC_CONFIG_HEADER(include/bold/Support/DataTypes.h)
 
@@ -71,7 +72,6 @@ CHECK_PTHREAD
 CHECK_ZLIB
 CHECK_ENABLE_UNITTEST
 CHECK_ENABLE_OPTIMIZE
-CHECK_PAT
 
 DX_INIT_DOXYGEN([bold], [doxygen.cfg], [docs])
 DX_DOT_FEATURE(OFF)

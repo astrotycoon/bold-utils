@@ -6,13 +6,10 @@
 // See LICENSE for details.
 //
 //===----------------------------------------------------------------------===//
-#include "Support/ManagedStatic.h"
+#include <pat/Support/ManagedStatic.h>
 #include <time.h>
 #include <unistd.h>
-
-#if defined(HAVE_SYS_TIME_H) && defined(ENABLE_GETTIMEOFDAY)
-#include <sys/time.h>
-#endif
+#include <sys/times.h>
 
 namespace pat {
 namespace testing {

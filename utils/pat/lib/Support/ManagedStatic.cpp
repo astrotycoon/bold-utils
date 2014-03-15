@@ -6,7 +6,7 @@
 // See LICENSE for details.
 //
 //===----------------------------------------------------------------------===//
-#include "ManagedStatic.h"
+#include <pat/Support/ManagedStatic.h>
 
 using namespace pat;
 
@@ -48,7 +48,7 @@ void ManagedStaticBase::destroy() const
 //===----------------------------------------------------------------------===//
 // Non-member functions
 //===----------------------------------------------------------------------===//
-void shutdown()
+void pat::shutdown()
 {
   while (StaticList)
     StaticList->destroy();

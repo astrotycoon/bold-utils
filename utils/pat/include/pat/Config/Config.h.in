@@ -1,10 +1,26 @@
-/* include/pat/Config/Config.h.in.  Generated from configure.ac by autoheader.  */
+/* utils/pat/include/pat/Config/Config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Enable clock_gettime */
-#undef ENABLE_CLOCK_GETTIME
 
-/* Enable gettimeofday */
-#undef ENABLE_GETTIMEOFDAY
+//===- Config.h.in --------------------------------------------------------===//
+//
+//                            The Bold Team
+//
+// This file is distributed under the New BSD License. 
+// See LICENSE for details.
+//
+//===----------------------------------------------------------------------===//
+#ifndef BOLD_CONFIG_CONFIG_H
+#define BOLD_CONFIG_CONFIG_H
+
+
+/* default target triple */
+#undef BOLD_DEFAULT_TARGET_TRIPLE
+
+/* Define if this is Unixish platform */
+#undef BOLD_ON_UNIX
+
+/* Define if this is Win32ish platform */
+#undef BOLD_ON_WIN32
 
 /* the name of <hash_map> */
 #undef HASH_MAP_CLASS
@@ -21,14 +37,8 @@
 /* the location of <unordered_set> or <hash_set> */
 #undef HASH_SET_H
 
-/* Have clock_gettime */
-#undef HAVE_CLOCK_GETTIME
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
-
-/* Define to 1 if you have the `gettimeofday' function. */
-#undef HAVE_GETTIMEOFDAY
 
 /* define if the compiler has hash_map */
 #undef HAVE_HASH_MAP
@@ -97,9 +107,6 @@
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
-/* Define to 1 if you have the <sys/time.h> header file. */
-#undef HAVE_SYS_TIME_H
-
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
@@ -152,9 +159,6 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* default target triple */
-#undef PAT_DEFAULT_TARGET_TRIPLE
-
 /* Define if this is Unixish platform */
 #undef PAT_ON_UNIX
 
@@ -170,3 +174,7 @@
 
 /* Version number of package */
 #undef VERSION
+
+
+#endif
+

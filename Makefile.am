@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = lib tools
+SUBDIRS = utils lib tools
 
 include docs/doxygen.am
 
