@@ -9,6 +9,7 @@
 #ifndef BOLD_SUPPORT_SLAB_ITERATOR_H
 #define BOLD_SUPPORT_SLAB_ITERATOR_H
 #include <bold/Support/DataTypes.h>
+#include <bold/ADT/IListIterator.h>
 
 namespace bold {
 
@@ -17,7 +18,7 @@ namespace bold {
  *  SlabIterator is a bidirectional iterator.
  */
 template<typename Container, typename Traits>
-class SlabIterator
+class SlabIterator : public IListIteratorBase
 {
 public:
   typedef std::bidirectional_iterator_tag iterator_category;
@@ -69,7 +70,6 @@ private:
 
 private:
   const sentinel_type* m_pSentinel;
-  IListNodeBase* m_pCurSlab;
   unsigned int m_Idx;
 };
 
@@ -78,36 +78,36 @@ private:
 //===----------------------------------------------------------------------===//
 template<typename Container, typename Traits>
 SlabIterator<Container, Traits>::SlabIterator()
-  : m_pSentinel(NULL), m_pCurSlab(NULL), m_Idx(-1) {
+  : IListIteratorBase(), m_pSentinel(NULL), m_Idx(-1) {
 }
 
 template<typename Container, typename Traits>
 SlabIterator<Container, Traits>::SlabIterator(const sentinel_type& pSentinel,
                                               IListNodeBase* pSlab,
                                               unsigned int pIdx)
-  : m_pSentinel(&pSentinel), m_pCurSlab(pSlab), m_Idx(pIdx) {
+  : IListIteratorBase(pSlab), m_pSentinel(&pSentinel), m_Idx(pIdx) {
 }
 
 template<typename Container, typename Traits>
 typename SlabIterator<Container, Traits>::reference
 SlabIterator<Container, Traits>::operator* () const
 {
-  assert(NULL != m_pSentinel && NULL != m_pCurSlab &&
+  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
          "Cannot derefer a NULL pointer");
   assert((unsigned int)-1 != m_Idx && "Cannot derefer end()");
 
-  return static_cast<slab_type*>(m_pCurSlab)->data[m_Idx];
+  return static_cast<slab_type*>(m_pNodePtr)->data[m_Idx];
 }
 
 template<typename Container, typename Traits>
 typename SlabIterator<Container, Traits>::pointer
 SlabIterator<Container, Traits>::operator->() const
 {
-  assert(NULL != m_pSentinel && NULL != m_pCurSlab &&
+  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
          "Cannot derefer a NULL pointer");
   assert((unsigned int)-1 != m_Idx && "Cannot derefer end()");
 
-  return static_cast<pointer>(static_cast<slab_type*>(m_pCurSlab)->data + m_Idx);
+  return static_cast<pointer>(static_cast<slab_type*>(m_pNodePtr)->data + m_Idx);
 }
 
 template<typename Container, typename Traits>
@@ -144,7 +144,7 @@ template<typename Container, typename Traits> bool
 SlabIterator<Container, Traits>::operator==(const SlabIterator& pOther) const
 {
   return (m_pSentinel == pOther.m_pSentinel &&
-          m_pCurSlab == pOther.m_pCurSlab &&
+          m_pNodePtr == pOther.m_pNodePtr &&
           m_Idx == pOther.m_Idx);
 }
 
@@ -157,25 +157,25 @@ SlabIterator<Container, Traits>::operator!=(const SlabIterator& pOther) const
 template<typename Container, typename Traits>
 void SlabIterator<Container, Traits>::forward()
 {
-  assert(NULL != m_pSentinel && NULL != m_pCurSlab &&
+  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
          "trivial iterator can not forward");
 
-  assert(m_pCurSlab != m_pSentinel && -1 != m_Idx &&
+  assert(m_pNodePtr != m_pSentinel && -1 != m_Idx &&
          "end() iterator can not forward");
 
   m_Idx = (m_Idx + 1) % slab_type::max_size;
 
   // if I'm at the last of the container, then go to the end
-  if (m_pCurSlab == m_pSentinel->getPrev() &&
+  if (m_pNodePtr == m_pSentinel->getPrev() &&
       m_Idx == m_pSentinel->size() % slab_type::max_size) {
-    m_pCurSlab = m_pCurSlab->getNext();
+    advance();
     m_Idx = -1;
     return;
   }
 
   // otherwise, if I'm at the last of the slab, then go to the next slab
   if (0 == m_Idx) {
-    m_pCurSlab = m_pCurSlab->getNext();
+    advance();
   }
 
   // the rest, move one step.
@@ -184,22 +184,22 @@ void SlabIterator<Container, Traits>::forward()
 template<typename Container, typename Traits>
 void SlabIterator<Container, Traits>::backward()
 {
-  assert(NULL != m_pSentinel && NULL != m_pCurSlab &&
+  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
          "trivial iterator can not backward");
 
-  assert(m_pCurSlab != m_pSentinel && -1 != m_Idx &&
+  assert(m_pNodePtr != m_pSentinel && -1 != m_Idx &&
          "rend() iterator can not backward");
 
   // if I'm at the front of the container, then go to the rend()
-  if (m_pSentinel == m_pCurSlab->getPrev() && 0 == m_Idx) {
-    m_pCurSlab = m_pCurSlab->getPrev();
+  if (m_pSentinel == m_pNodePtr->getPrev() && 0 == m_Idx) {
+    retreat();
     m_Idx = -1;
     return;
   }
 
   // otherwise, if I'm at the front of a slab, then go to the previous slab
   if (0 == m_Idx) {
-    m_pCurSlab = m_pCurSlab->getPrev();
+    retreat();
     m_Idx = slab_type::max_size - 1;
     return;
   }
@@ -211,4 +211,3 @@ void SlabIterator<Container, Traits>::backward()
 } // namespace bold
 
 #endif
-
