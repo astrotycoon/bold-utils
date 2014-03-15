@@ -98,7 +98,6 @@ protected:
   void appendSlab(IListNodeBase& pValue);
 
   void prependSlab(IListNodeBase& pValue);
-
 };
 
 //===----------------------------------------------------------------------===//
