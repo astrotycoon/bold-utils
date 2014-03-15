@@ -94,5 +94,6 @@ AC_CONFIG_FILES([tools/bold/Makefile])
 AC_CONFIG_FILES([utils/Makefile])
 AC_CONFIG_FILES([utils/pat/Makefile])
 AC_CONFIG_FILES([utils/pat/lib/Makefile])
+AC_CONFIG_FILES([unittests/Makefile])
 
 AC_OUTPUT
