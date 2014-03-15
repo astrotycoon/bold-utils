@@ -24,7 +24,6 @@ public:
   typedef std::bidirectional_iterator_tag iterator_category;
   typedef typename Container::Sentinel    sentinel_type;
   typedef typename Container::value_type  value_type;
-  typedef ptrdiff_t                       difference_type;
   typedef typename Traits::pointer        pointer;
   typedef typename Traits::reference      reference;
 
@@ -163,9 +162,10 @@ void SlabIterator<Container, Traits>::forward()
   assert(m_pNodePtr != m_pSentinel && -1 != m_Idx &&
          "end() iterator can not forward");
 
+  // move one step.
   m_Idx = (m_Idx + 1) % slab_type::max_size;
 
-  // if I'm at the last of the container, then go to the end
+  // if I'm at the rear of the container, then go to the end
   if (m_pNodePtr == m_pSentinel->getPrev() &&
       m_Idx == m_pSentinel->size() % slab_type::max_size) {
     advance();
@@ -173,12 +173,10 @@ void SlabIterator<Container, Traits>::forward()
     return;
   }
 
-  // otherwise, if I'm at the last of the slab, then go to the next slab
+  // otherwise, if I'm at the rear of a slab, then go to the next slab
   if (0 == m_Idx) {
     advance();
   }
-
-  // the rest, move one step.
 }
 
 template<typename Container, typename Traits>
