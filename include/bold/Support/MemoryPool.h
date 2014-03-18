@@ -38,6 +38,8 @@ public:
   typedef const DataType& const_reference;
   typedef DataType& reference;
 
+  typedef Slab<DataType, Amount> slab_type;
+
   template<typename NewDataType>
   struct rebind {
     typedef MemoryAllocator<NewDataType, Amount> other;
@@ -165,6 +167,65 @@ MemoryAllocator<DataType, Amount>::MemoryAllocator(const MemoryAllocator& pCopy)
     construct(new_data, *head);
     head = head->getNext();
   }
+}
+
+template<typename DataType, unsigned int Amount>
+typename MemoryAllocator<DataType, Amount>::pointer
+MemoryAllocator<DataType, Amount>::allocate()
+{
+  unsigned int index = size() % Amount;
+  IListBase::getSentinel()->countIn();
+  if (0 == index) { // slab full
+    slab_type* new_slab = new slab_type();
+    AppendSlab(*new_slab);
+    return new_slab->data;
+  }
+
+  return static_cast<slab_type*>(IListBase::getSentinel()->getPrev())->data + index;
+}
+
+template<typename DataType, unsigned int Amount>
+typename MemoryAllocator<DataType, Amount>::pointer
+MemoryAllocator<DataType, Amount>::allocate(size_type pN)
+{
+  assert(pN <= Amount && "allocate too many data");
+
+  // lazy intialization
+  if (IListBase::empty()) {
+    slab_type* new_slab = new slab_type();
+    AppendSlab(*new_slab);
+    IListBase::getSentinel()->countIn(pN);
+    return new_slab->data;
+  }
+
+  // can not allocate in the same slab
+  if (Amount - pN < IListBase::size() %Amount) {
+    slab_type* new_slab = new slab_type();
+    AppendSlab(*new_slab);
+    IListBase::getSentinel()->countIn(pN + Amount - size()%Amount);
+    return new_slab->data;
+  }
+
+  unsigned int head = IListBase::getSentinel()->size() % size();
+  return static_cast<slab_type*>(IListBase::getSentinel()->getPrev())->data + head;
+}
+
+template<typename DataType, unsigned int Amount> void
+MemoryAllocator<DataType, Amount>::construct(pointer pPtr, const_reference pVal)
+{
+  new (pPtr) DataType(pVal);
+}
+
+template<typename DataType, unsigned int Amount>
+void MemoryAllocator<DataType, Amount>::AppendSlab(IListNodeBase& pValue)
+{
+  doInsert(*IListBase::getSentinel(), pValue);
+}
+
+template<typename DataType, unsigned int Amount>
+void MemoryAllocator<DataType, Amount>::PrependSlab(IListNodeBase& pValue)
+{
+  doInsert(*IListBase::head(), pValue);
 }
 
 //===----------------------------------------------------------------------===//
