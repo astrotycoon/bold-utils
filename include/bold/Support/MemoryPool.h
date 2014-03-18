@@ -18,6 +18,54 @@
 
 namespace bold {
 
+/** \class MemoryAllocator
+ *  \brief MemoryAllocator allocates numerous small objects.
+ *
+ *  MemoryAllocator is a memory pool allocator. It preallocates a number
+ *  of memory blocks to avoid the system from memory fragmentation.
+ *
+ *  MemoryAllocator doesn't provide deallocator. Users should design his own
+ *  deallocators. That is because the implementation of deallocators need
+ *  very careful consideration of trade-offs between speed and memory usage.
+ */
+template<typename DataType, unsigned int Amount>
+class MemoryAllocator : public IListBase
+{
+public:
+  typedef DataType value_type;
+  typedef const DataType* const_pointer;
+  typedef DataType* pointer;
+  typedef const DataType& const_reference;
+  typedef DataType& reference;
+
+  template<typename NewDataType>
+  struct rebind {
+    typedef MemoryAllocator<NewDataType, Amount> other;
+  };
+
+public:
+  MemoryAllocator();
+
+  MemoryAllocator(const MemoryAllocator& pCopy);
+
+  virtual ~MemoryAllocator() { }
+
+  /// allocate - to allocate one datum.
+  pointer allocate();
+
+  /// allocate - to allocate multiple data
+  pointer allocate(size_type pN);
+
+  /// construct - to construct an element object on the location of pointed by
+  /// pPtr
+  void construct(pointer pPtr, const_reference pVal);
+
+protected:
+  void AppendSlab(IListNodeBase& pSlab);
+
+  void PrependSlab(IListNodeBase& pSlab);
+};
+
 /** \class MemoryPool
  *  \brief MemoryPool provides a factory that guaratees to remove all allocated
  *  data.
