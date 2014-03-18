@@ -54,7 +54,7 @@ CXX_FLAG_CHECK([-Wno-variadic-macros])
 ####################
 # Check for libraries
 SETUP_CONFIG_HEADER
-SETUP_PAT
+SETUP_PAT([utils/pat])
 AC_CONFIG_HEADER(include/bold/Config/Config.h)
 AC_CONFIG_HEADER(include/bold/Support/DataTypes.h)
 

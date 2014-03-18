@@ -1,10 +1,13 @@
 dnl
-dnl @synopsis SETUP_PAT
+dnl @synopsis SETUP_PAT([PAT-INSTALL-PATH])
 dnl
 dnl @summary install "pat" library, and set up variables:
 dnl   PAT_CFLAGS="-I${abs_top_srcdir}/pat/include"
 dnl   PAT_CPPFLAGS="-I${abs_top_srcdir}/pat/include"
 dnl   PAT_LDFLAGS="-L${abs_top_builddir}/lib -lpat"
+dnl
+dnl This macro set up Config.h and configuration of the pat which is installed
+dnl at [PAT-INSTALL-PATH].
 dnl
 dnl Luba Tang <luba@skymizer.com>
 
@@ -13,6 +16,8 @@ AC_DEFUN([SETUP_PAT],
 
 # Check for pat.
 AC_MSG_CHECKING(configure "pat" library)
+
+PAT_PATH=$1
 
 AC_CANONICAL_HOST
 
@@ -103,8 +108,11 @@ esac
 
 AC_CONFIG_HEADERS([utils/pat/include/pat/Config/Config.h])
 
-pat_src_path='${abs_top_srcdir}/utils/pat'
-pat_build_path='${abs_top_builddir}/utils/pat'
+pat_src_path='${abs_top_srcdir}/'
+pat_src_path+=${PAT_PATH}
+
+pat_build_path='${abs_top_builddir}/'
+pat_build_path+=${PAT_PATH}
 
 PAT_CFLAGS="-I${pat_src_path}/include -I${pat_build_path}/include"
 PAT_CPPFLAGS="-I${pat_src_path}/include -I${pat_build_path}/include"
