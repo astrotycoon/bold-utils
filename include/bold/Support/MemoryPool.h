@@ -149,6 +149,25 @@ protected:
 };
 
 //===----------------------------------------------------------------------===//
+// MemoryAllocator
+//===----------------------------------------------------------------------===//
+template<typename DataType, unsigned int Amount>
+MemoryAllocator<DataType, Amount>::MemoryAllocator()
+  : IListBase() {
+}
+
+template<typename DataType, unsigned int Amount>
+MemoryAllocator<DataType, Amount>::MemoryAllocator(const MemoryAllocator& pCopy)
+  : IListBase() {
+  pointer head, end = pCopy.getSentinel();
+  while (head != end) {
+    pointer new_data = allocate();
+    construct(new_data, *head);
+    head = head->getNext();
+  }
+}
+
+//===----------------------------------------------------------------------===//
 // MemoryPool
 //===----------------------------------------------------------------------===//
 template<typename DataType, unsigned int Amount>
