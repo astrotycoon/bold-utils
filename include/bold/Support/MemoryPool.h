@@ -48,10 +48,6 @@ public:
 public:
   MemoryAllocator();
 
-  MemoryAllocator(const MemoryAllocator&);
-
-  MemoryAllocator& operator=(const MemoryAllocator&);
-
   virtual ~MemoryAllocator() { }
 
   /// allocate - to allocate one datum.
@@ -115,6 +111,10 @@ public:
 
 public:
   MemoryPool();
+
+  MemoryPool(const MemoryPool& pCopy);
+
+  MemoryPool& operator=(const MemoryPool& pCopy);
 
   virtual ~MemoryPool();
 
@@ -225,6 +225,31 @@ MemoryPool<DataType, Amount>::MemoryPool()
 }
 
 template<typename DataType, unsigned int Amount>
+MemoryPool<DataType, Amount>::MemoryPool(const MemoryPool& pCopy)
+  : Alloc() {
+  const_iterator data, dEnd = pCopy.end();
+  for (data = pCopy.begin(); data != dEnd; ++data) {
+    DataType* new_data = Alloc::allocate();
+    Alloc::construct(new_data, *data);
+  }
+}
+
+template<typename DataType, unsigned int Amount>
+MemoryPool<DataType, Amount>&
+MemoryPool<DataType, Amount>::operator=(const MemoryPool& pCopy)
+{
+  clear();
+
+  const_iterator data, dEnd = pCopy.end();
+  for (data = pCopy.begin(); data != dEnd; ++data) {
+    DataType* new_data = Alloc::allocate();
+    Alloc::construct(new_data, *data);
+  }
+
+  return *this;
+}
+
+template<typename DataType, unsigned int Amount>
 MemoryPool<DataType, Amount>::~MemoryPool()
 {
   clear();
@@ -234,7 +259,8 @@ template<typename DataType, unsigned int Amount>
 typename MemoryPool<DataType, Amount>::const_iterator
 MemoryPool<DataType, Amount>::begin() const
 {
-  return const_iterator(*Alloc::getSentinel(), Alloc::head(), 0);
+  IListNodeBase* node = const_cast<IListNodeBase*>(Alloc::head());
+  return const_iterator(*Alloc::getSentinel(), node, 0);
 }
 
 template<typename DataType, unsigned int Amount>
