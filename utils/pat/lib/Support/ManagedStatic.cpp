@@ -7,6 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 #include <pat/Support/ManagedStatic.h>
+#include <cassert>
 
 using namespace pat;
 
