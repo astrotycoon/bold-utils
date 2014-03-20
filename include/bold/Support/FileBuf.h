@@ -10,6 +10,8 @@
 #define BOLD_SUPPORT_FILEBUF_H
 #include <bold/Support/IOSFwd.h>
 #include <bold/Support/OStream.h>
+#include <cstdio>
+#include <errno.h>
 
 namespace bold {
 

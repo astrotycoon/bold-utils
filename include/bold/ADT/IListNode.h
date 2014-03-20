@@ -8,6 +8,7 @@
 //===----------------------------------------------------------------------===//
 #ifndef BOLD_ADT_ILIST_NODE_H
 #define BOLD_ADT_ILIST_NODE_H
+#include <stddef.h>
 #include <cassert>
 
 namespace bold {
