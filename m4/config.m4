@@ -13,7 +13,7 @@ AH_TOP([
 //
 //                            The Bold Team
 //
-// This file is distributed under the New BSD License. 
+// This file is distributed under the New BSD License.
 // See LICENSE for details.
 //
 //===----------------------------------------------------------------------===//
@@ -21,8 +21,5 @@ AH_TOP([
 #define BOLD_CONFIG_CONFIG_H
 ])
 
-AH_BOTTOM([
-#endif
-])
-
+AH_BOTTOM([#endif])
 ])
