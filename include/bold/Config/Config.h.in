@@ -178,6 +178,8 @@
 /* Version number of package */
 #undef VERSION
 
+/* default amount of elements in a slab of StringList */
+#define BOLD_NUM_OF_STR 64
 
 #endif
 

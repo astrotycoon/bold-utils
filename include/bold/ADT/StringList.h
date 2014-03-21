@@ -9,6 +9,7 @@
 #ifndef BOLD_ADT_STRING_LIST_H
 #define BOLD_ADT_STRING_LIST_H
 #include <bold/ADT/StringRef.h>
+#include <bold/Config/Config.h>
 #include <bold/Support/MemoryPool.h>
 #include <string>
 
@@ -17,10 +18,10 @@ namespace bold {
 /** \class StringList
  *  \brief StringList is a list of StringRef.
  */
-class StringList : public MemoryPool<StringRef, 64>
+class StringList : public MemoryPool<StringRef, BOLD_NUM_OF_STR>
 {
 public:
-  typedef MemoryPool<StringRef, 64> BaseType;
+  typedef MemoryPool<StringRef, BOLD_NUM_OF_STR> BaseType;
 
 public:
   inline StringList() { }
