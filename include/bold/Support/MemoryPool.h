@@ -355,9 +355,12 @@ void MemoryPool<DataType, Amount>::clear()
   IListNodeBase* sentinel = Alloc::getSentinel();
   while (cur != sentinel) {
     IListNodeBase* next = cur->getNext();
+    Alloc::doErase(*cur);
     delete cur;
     cur = next;
   }
+
+  // The last node is sentinel. Do not delete it.
 }
 
 } // namespace of bold
