@@ -55,8 +55,8 @@ PAT_C( MemoryPoolTest, simple_allocate) {
   MemoryPool<int, 32> int_array;
   int* a = int_array.allocate();
   new (a) int(3);
-  ASSERT_TRUE(3 == *a);
-  ASSERT_TRUE(1 == int_array.size());
+  ASSERT_EQ(*a, 3);
+  ASSERT_EQ(int_array.size(), 1);
 }
 
 PAT_C( MemoryPoolTest, simple_allocate_more_than_a_slab) {
