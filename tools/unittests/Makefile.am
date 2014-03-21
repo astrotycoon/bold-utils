@@ -26,6 +26,7 @@ BOLD_SOURCES += AllocatorsTest.cpp \
 	PathTest.cpp \
 	RopeTest.cpp \
 	StringRefTest.cpp \
+	StringListTest.cpp \
 	StringSwitchTest.cpp
 
 BOLD_INCLUDES += -I${UNITTEST}
