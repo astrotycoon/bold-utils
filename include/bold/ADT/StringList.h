@@ -30,21 +30,30 @@ public:
 
   inline explicit StringList(StringRef pCopy) { append(pCopy); }
 
-  StringList& append(StringRef& pStr);
+  StringList& append(const StringRef& pStr);
+
   StringList& append(const std::string& pStr);
+
   StringList& append(const char* pStr);
 
   StringList& operator<<(StringRef& pStr);
+
   StringList& operator<<(const std::string& pStr);
 
 private:
   /// hide allocate symbol
   using BaseType::allocate;
 
+  /// hide construct symbol
+  using BaseType::construct;
+
   /// deallocate - release a StringRef.
   /// This does not really delete StringRef. Instead, it just turn the
   /// StringRef to empty.
   void deallocate(BaseType::pointer pPtr);
+
+  /// destruct - destruct a StringRef
+  void destruct(BaseType::pointer pPtr);
 };
 
 } // namespace of bold

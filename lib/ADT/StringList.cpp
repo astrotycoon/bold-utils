@@ -13,7 +13,7 @@ using namespace bold;
 //===----------------------------------------------------------------------===//
 // StringList
 //===----------------------------------------------------------------------===//
-StringList& StringList::append(StringRef& pStr)
+StringList& StringList::append(const StringRef& pStr)
 {
   return *this;
 }
@@ -44,8 +44,12 @@ StringList& StringList::operator<<(const std::string& pStr)
 void StringList::deallocate(BaseType::pointer pPtr)
 {
   // reset pointer and length
-  pPtr->~StringRef();
   BaseType::getSentinel()->countOut();
+  destruct(pPtr);
   pPtr = NULL;
 }
 
+void StringList::destruct(BaseType::pointer pPtr)
+{
+  pPtr->~StringRef();
+}

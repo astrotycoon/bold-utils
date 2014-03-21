@@ -25,7 +25,8 @@ PAT_F(StringListCase, size_test)
   list.append(b);
   list.append(c);
 
-  ASSERT_TRUE(3 == list.size());
+  ASSERT_EQ(3, list.size());
   ASSERT_FALSE(list.empty());
+  ASSERT_TRUE(0 == list.front().compare(a));
 }
 
