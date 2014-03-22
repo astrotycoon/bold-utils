@@ -321,3 +321,33 @@ PAT_C( IListTest, erase_in_the_middle_test)
   --it;
   ASSERT_TRUE(13 == it->value);
 }
+
+PAT_C( IListTest, constant_iterator_test)
+{
+  IntNode a;
+  IntNode b;
+  IntNode c;
+  IntNode d;
+  a.value = 7;
+  b.value = 13;
+  c.value = 17;
+  d.value = 19;
+
+  IList<IntNode> prime_list;
+
+  prime_list.push_back(&a);
+  prime_list.push_back(&b);
+  prime_list.push_back(&c);
+  prime_list.push_back(&d);
+
+  IList<IntNode>::const_iterator it =
+                      const_cast<const IList<IntNode>* >(&prime_list)->begin();
+  ++it; ++it;
+
+  ASSERT_TRUE(4 == prime_list.size());
+  ASSERT_TRUE(7 == prime_list.front().value);
+  ASSERT_TRUE(19 == prime_list.back().value);
+  ASSERT_TRUE(17 == it->value);
+  --it;
+  ASSERT_TRUE(13 == it->value);
+}
