@@ -6,36 +6,12 @@
 //  See LICENSE for details.
 //
 //===----------------------------------------------------------------------===//
-#include "MemoryPoolTest.h"
+#include <pat/pat.h>
 #include <bold/Support/MemoryPool.h>
 #include <bold/Support/DataTypes.h>
 #include <cstring>
 
 using namespace bold;
-using namespace bold::test;
-
-//===----------------------------------------------------------------------===//
-// MemoryPool
-//===----------------------------------------------------------------------===//
-// Constructor can do set-up work for all test here.
-MemoryPoolTest::MemoryPoolTest()
-{
-}
-
-// Destructor can do clean-up work that doesn't throw exceptions here.
-MemoryPoolTest::~MemoryPoolTest()
-{
-}
-
-// SetUp() will be called immediately before each test.
-void MemoryPoolTest::SetUp()
-{
-}
-
-// TearDown() will be called immediately after each test.
-void MemoryPoolTest::TearDown()
-{
-}
 
 //===----------------------------------------------------------------------===//
 // Testcases
@@ -51,7 +27,7 @@ struct Element {
 
 } // anonymous namespace
 
-PAT_C( MemoryPoolTest, simple_allocate) {
+PAT_F( MemoryPoolTest, simple_allocate) {
   MemoryPool<int, 32> int_array;
   int* a = int_array.allocate();
   new (a) int(3);
@@ -59,7 +35,7 @@ PAT_C( MemoryPoolTest, simple_allocate) {
   ASSERT_EQ(int_array.size(), 1);
 }
 
-PAT_C( MemoryPoolTest, simple_allocate_more_than_a_slab) {
+PAT_F( MemoryPoolTest, simple_allocate_more_than_a_slab) {
   MemoryPool<int, 3> int_mem_pool;
   int* a = int_mem_pool.allocate();
   new (a) int(3);
@@ -91,7 +67,7 @@ PAT_C( MemoryPoolTest, simple_allocate_more_than_a_slab) {
   ASSERT_TRUE(4 == counter);
 }
 
-PAT_C( MemoryPoolTest, complex_allocate) {
+PAT_F( MemoryPoolTest, complex_allocate) {
   MemoryPool<Element, 2> e_mempool;
 
   Element* a = e_mempool.allocate();
@@ -119,7 +95,7 @@ PAT_C( MemoryPoolTest, complex_allocate) {
   ASSERT_TRUE(4 == counter);
 }
 
-PAT_C( MemoryPoolTest, complex_iterate) {
+PAT_F( MemoryPoolTest, complex_iterate) {
   MemoryPool<Element, 2> e_mempool;
 
   Element* a = e_mempool.allocate();
@@ -164,7 +140,7 @@ PAT_C( MemoryPoolTest, complex_iterate) {
   ASSERT_TRUE(-3 == it->d);
 }
 
-PAT_C( MemoryPoolTest, StringPoolTest )
+PAT_F( MemoryPoolTest, StringPoolTest )
 {
   MemoryPool<char, 10> str_pool;
   char* str1 = str_pool.allocate(7);
