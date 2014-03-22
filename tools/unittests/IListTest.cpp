@@ -6,48 +6,23 @@
 //  See LICENSE for details.
 //
 //===----------------------------------------------------------------------===//
-#include "IListTest.h"
-#include <bold/ADT/IListNode.h>
+#include <pat/pat.h>
 #include <bold/ADT/IList.h>
+#include <bold/ADT/IListNode.h>
 #include <vector>
 
 using namespace bold;
-using namespace bold::test;
 
-//===----------------------------------------------------------------------===//
-// IListNode
-//===----------------------------------------------------------------------===//
-// Constructor can do set-up work for all test here.
-IListTest::IListTest()
-{
-}
-
-// Destructor can do clean-up work that doesn't throw exceptions here.
-IListTest::~IListTest()
-{
-}
-
-// SetUp() will be called immediately before each test.
-void IListTest::SetUp()
-{
-}
-
-// TearDown() will be called immediately after each test.
-void IListTest::TearDown()
-{
-}
-
-//===----------------------------------------------------------------------===//
-// Testcases
-//===----------------------------------------------------------------------===//
 namespace {
   struct IntNode : public IListNode<IntNode> {
     int value;
   };
-
 } // anonymous namespace
 
-PAT_C( IListTest, default_constructor)
+//===----------------------------------------------------------------------===//
+// Testcases
+//===----------------------------------------------------------------------===//
+PAT_F(IListTest, default_constructor)
 {
   IList<IntNode> int_list;
 
@@ -57,7 +32,7 @@ PAT_C( IListTest, default_constructor)
   ASSERT_TRUE(int_list.begin() == int_list.end());
 }
 
-PAT_C( IListTest, push_back_test)
+PAT_F( IListTest, push_back_test)
 {
   IntNode a;
   IntNode b;
@@ -76,7 +51,7 @@ PAT_C( IListTest, push_back_test)
   ASSERT_TRUE(13 == int_list.back().value);
 }
 
-PAT_C( IListTest, push_front_test)
+PAT_F( IListTest, push_front_test)
 {
   IntNode a;
   IntNode b;
@@ -95,7 +70,7 @@ PAT_C( IListTest, push_front_test)
   ASSERT_TRUE(7  == int_list.back().value);
 }
 
-PAT_C( IListTest, iterate_list)
+PAT_F( IListTest, iterate_list)
 {
   IntNode a;
   IntNode b;
@@ -124,7 +99,7 @@ PAT_C( IListTest, iterate_list)
   ASSERT_TRUE(int_list.end() == it);
 }
 
-PAT_C( IListTest, reverse_iterate_list)
+PAT_F( IListTest, reverse_iterate_list)
 {
   IntNode a;
   IntNode b;
@@ -151,7 +126,7 @@ PAT_C( IListTest, reverse_iterate_list)
   ASSERT_TRUE(int_list.rend() == it);
 }
 
-PAT_C( IListTest, pop_front_test )
+PAT_F( IListTest, pop_front_test )
 {
   IntNode a;
   IntNode b;
@@ -173,7 +148,7 @@ PAT_C( IListTest, pop_front_test )
   ASSERT_TRUE(0 == int_list.size());
 }
 
-PAT_C( IListTest, pop_back_test )
+PAT_F( IListTest, pop_back_test )
 {
   IntNode a;
   IntNode b;
@@ -195,7 +170,7 @@ PAT_C( IListTest, pop_back_test )
   ASSERT_TRUE(0 == int_list.size());
 }
 
-PAT_C( IListTest, clear_test)
+PAT_F( IListTest, clear_test)
 {
   IntNode a;
   IntNode b;
@@ -217,7 +192,7 @@ PAT_C( IListTest, clear_test)
   ASSERT_TRUE(NULL == b.getNext());
 }
 
-PAT_C( IListTest, swap_test)
+PAT_F( IListTest, swap_test)
 {
   IntNode a;
   IntNode b;
@@ -259,7 +234,7 @@ PAT_C( IListTest, swap_test)
   ASSERT_TRUE(2 == prime_list.front().value);
 }
 
-PAT_C( IListTest, insert_in_the_middle_test)
+PAT_F( IListTest, insert_in_the_middle_test)
 {
   IntNode a;
   IntNode b;
@@ -292,7 +267,7 @@ PAT_C( IListTest, insert_in_the_middle_test)
   ASSERT_TRUE(2 == it->value);
 }
 
-PAT_C( IListTest, erase_in_the_middle_test)
+PAT_F( IListTest, erase_in_the_middle_test)
 {
   IntNode a;
   IntNode b;
@@ -322,7 +297,7 @@ PAT_C( IListTest, erase_in_the_middle_test)
   ASSERT_TRUE(13 == it->value);
 }
 
-PAT_C( IListTest, constant_iterator_test)
+PAT_F( IListTest, constant_iterator_test)
 {
   IntNode a;
   IntNode b;
