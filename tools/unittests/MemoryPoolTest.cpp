@@ -13,9 +13,6 @@
 
 using namespace bold;
 
-//===----------------------------------------------------------------------===//
-// Testcases
-//===----------------------------------------------------------------------===//
 namespace {
 
 struct Element {
@@ -27,7 +24,11 @@ struct Element {
 
 } // anonymous namespace
 
-PAT_F( MemoryPoolTest, simple_allocate) {
+//===----------------------------------------------------------------------===//
+// Testcases
+//===----------------------------------------------------------------------===//
+PAT_F( MemoryPoolTest, simple_allocate)
+{
   MemoryPool<int, 32> int_array;
   int* a = int_array.allocate();
   new (a) int(3);
@@ -35,17 +36,18 @@ PAT_F( MemoryPoolTest, simple_allocate) {
   ASSERT_EQ(int_array.size(), 1);
 }
 
-PAT_F( MemoryPoolTest, simple_allocate_more_than_a_slab) {
+PAT_F( MemoryPoolTest, simple_allocate_more_than_a_slab)
+{
   MemoryPool<int, 3> int_mem_pool;
   int* a = int_mem_pool.allocate();
   new (a) int(3);
-  ASSERT_TRUE(3 == *a);
-  ASSERT_TRUE(1 == int_mem_pool.size());
+  ASSERT_EQ(*a, 3);
+  ASSERT_EQ(int_mem_pool.size(), 1);
 
   a = int_mem_pool.allocate();
   new (a) int(2);
-  ASSERT_TRUE(2 == *a);
-  ASSERT_TRUE(2 == int_mem_pool.size());
+  ASSERT_EQ(*a, 2);
+  ASSERT_EQ(int_mem_pool.size(), 2);
 
   a = int_mem_pool.allocate();
   new (a) int(1);
@@ -67,7 +69,8 @@ PAT_F( MemoryPoolTest, simple_allocate_more_than_a_slab) {
   ASSERT_TRUE(4 == counter);
 }
 
-PAT_F( MemoryPoolTest, complex_allocate) {
+PAT_F( MemoryPoolTest, complex_allocate)
+{
   MemoryPool<Element, 2> e_mempool;
 
   Element* a = e_mempool.allocate();
@@ -76,7 +79,7 @@ PAT_F( MemoryPoolTest, complex_allocate) {
   a->c = 254;
   a->d = -1;
 
-  ASSERT_TRUE(1 == e_mempool.size());
+  EXPECT_EQ(e_mempool.size(), 1);
 
   a = e_mempool.allocate();
   ASSERT_TRUE(2 == e_mempool.size());
@@ -95,7 +98,8 @@ PAT_F( MemoryPoolTest, complex_allocate) {
   ASSERT_TRUE(4 == counter);
 }
 
-PAT_F( MemoryPoolTest, complex_iterate) {
+PAT_F( MemoryPoolTest, complex_iterate)
+{
   MemoryPool<Element, 2> e_mempool;
 
   Element* a = e_mempool.allocate();
@@ -104,7 +108,7 @@ PAT_F( MemoryPoolTest, complex_iterate) {
   a->c = 254;
   a->d = -1;
 
-  ASSERT_TRUE(1 == e_mempool.size());
+  EXPECT_EQ(e_mempool.size(), 1);
 
   MemoryPool<Element, 2>::iterator it = e_mempool.begin();
   ASSERT_TRUE('1' == it->a);
