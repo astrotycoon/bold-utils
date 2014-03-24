@@ -50,6 +50,9 @@ template<typename NodeType>
 class IListNode : public IListNodeBase
 {
 public:
+  typedef IListNodeBase Base;
+
+public:
   IListNode() : IListNodeBase() { }
 
   IListNode(IListNode* pPrev, IListNode* pNext)
