@@ -18,7 +18,7 @@ IListIteratorBase::IListIteratorBase()
   : m_pNodePtr(NULL) {
 }
 
-IListIteratorBase::IListIteratorBase(NodeBase* pNode)
+IListIteratorBase::IListIteratorBase(IListNodeBase* pNode)
   : m_pNodePtr(pNode) {
 }
 
