@@ -22,7 +22,7 @@ namespace bold {
  *  @tparam Amount   the amount of elements in a slab
  */
 template<typename DataType, unsigned int Amount>
-struct Slab : public IListNode<Slab>
+struct Slab : public IListNodeBase
 {
 public:
   enum {
