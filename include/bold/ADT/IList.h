@@ -9,6 +9,7 @@
 #ifndef BOLD_ADT_ILIST_H
 #define BOLD_ADT_ILIST_H
 #include <bold/ADT/IListIterator.h>
+#include <bold/ADT/IListNode.h>
 #include <bold/ADT/TypeTraits.h>
 #include <bold/ADT/Uncopyable.h>
 #include <bold/Support/DataTypes.h>
@@ -98,8 +99,8 @@ template<typename NodeType>
 class IList : public IListBase 
 {
 public:
-  typedef IListIterator<NodeType, NonConstTraits<NodeType> > iterator;
-  typedef IListIterator<NodeType, ConstTraits<NodeType> >    const_iterator;
+  typedef IListIterator<const NodeType> const_iterator;
+  typedef IListIterator<NodeType>       iterator;
 
   typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
   typedef std::reverse_iterator<iterator>       reverse_iterator;
@@ -114,10 +115,10 @@ public:
 
   virtual ~IList() { clear(); }
   
-  const_iterator begin() const { return const_iterator(head()); }
-  iterator       begin()       { return iterator(head());       }
-  const_iterator end()   const { return const_iterator(head()->getPrev()); }
-  iterator       end()         { return iterator(head()->getPrev());       }
+  const_iterator begin() const;
+  iterator       begin();
+  const_iterator end()   const;
+  iterator       end();
 
   const_reverse_iterator rbegin() const;
   reverse_iterator       rbegin();
@@ -153,6 +154,30 @@ public:
 //===----------------------------------------------------------------------===//
 // IList Member Functions
 //===----------------------------------------------------------------------===//
+template<typename NodeType>
+typename IList<NodeType>::iterator IList<NodeType>::begin()
+{
+  return iterator(m_pHead);
+}
+
+template<typename NodeType>
+typename IList<NodeType>::const_iterator IList<NodeType>::begin() const
+{
+  return const_iterator(m_pHead);
+}
+
+template<typename NodeType>
+typename IList<NodeType>::iterator IList<NodeType>::end()
+{
+  return iterator(m_pHead->getPrev());
+}
+
+template<typename NodeType>
+typename IList<NodeType>::const_iterator IList<NodeType>::end() const
+{
+  return const_iterator(m_pHead->getPrev());
+}
+
 template<typename NodeType>
 typename IList<NodeType>::const_reverse_iterator IList<NodeType>::rbegin() const
 {

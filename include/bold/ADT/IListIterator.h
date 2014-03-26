@@ -20,19 +20,20 @@ class IListIteratorBase
 public:
   typedef std::bidirectional_iterator_tag iterator_category;
   typedef ptrdiff_t difference_type;
-  typedef IListNodeBase NodeBase;
 
 protected:
-  NodeBase* m_pNodePtr;
+  IListNodeBase* m_pNodePtr;
   
 public:
   IListIteratorBase();
 
-  explicit IListIteratorBase(NodeBase* pNode);
+  explicit IListIteratorBase(IListNodeBase* pNode);
 
   virtual ~IListIteratorBase() { }
 
-  NodeBase* getRawPtr() const { return m_pNodePtr; }
+  const IListNodeBase* getRawPtr() const { return m_pNodePtr; }
+
+  IListNodeBase*       getRawPtr()       { return m_pNodePtr; }
 
 protected:
   void advance();
@@ -44,20 +45,24 @@ protected:
  *
  *  IListIterator is a bidirectional iterator.
  */
-template<typename NodeType, typename Traits>
+template<typename NodeType>
 class IListIterator : public IListIteratorBase
 {
 public:
   typedef NodeType  value_type;
-  typedef typename Traits::pointer        pointer;
-  typedef typename Traits::reference      reference;
+  typedef NodeType* pointer;
+  typedef NodeType& reference;
 
 public:
   IListIterator();
 
-  explicit IListIterator(NodeBase* pNode);
+  explicit IListIterator(IListNodeBase* pNode);
 
   virtual ~IListIterator() { }
+
+  template<typename NT>
+  IListIterator(const IListIterator<NT>& pRHS)
+    : IListIterator(pRHS.getRawPtr()) { }
 
   operator pointer() const;
 
@@ -88,61 +93,61 @@ private:
 //===----------------------------------------------------------------------===//
 // IListIterator Member Functions
 //===----------------------------------------------------------------------===//
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits>::IListIterator()
+template<typename NodeType>
+IListIterator<NodeType>::IListIterator()
   : IListIteratorBase() {
 }
 
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits>::IListIterator(NodeBase* pNode)
+template<typename NodeType>
+IListIterator<NodeType>::IListIterator(IListNodeBase* pNode)
   : IListIteratorBase(pNode) {
 }
 
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits>::operator pointer() const
+template<typename NodeType>
+IListIterator<NodeType>::operator pointer() const
 {
   return static_cast<pointer>(m_pNodePtr);
 }
 
-template<typename NodeType, typename Traits>
-typename IListIterator<NodeType, Traits>::reference
-IListIterator<NodeType, Traits>::operator* () const
+template<typename NodeType>
+typename IListIterator<NodeType>::reference
+IListIterator<NodeType>::operator* () const
 {
   assert(NULL != m_pNodePtr && "Can not derefer a NULL pointer");
   return *static_cast<pointer>(m_pNodePtr);
 }
 
-template<typename NodeType, typename Traits>
-typename IListIterator<NodeType, Traits>::pointer
-IListIterator<NodeType, Traits>::operator->() const
+template<typename NodeType>
+typename IListIterator<NodeType>::pointer
+IListIterator<NodeType>::operator->() const
 {
   return static_cast<pointer>(m_pNodePtr);
 }
 
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits>& IListIterator<NodeType, Traits>::operator++()
+template<typename NodeType>
+IListIterator<NodeType>& IListIterator<NodeType>::operator++()
 {
   advance();
   return *this;
 }
 
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits>& IListIterator<NodeType, Traits>::operator--()
+template<typename NodeType>
+IListIterator<NodeType>& IListIterator<NodeType>::operator--()
 {
   retreat();
   return *this;
 }
 
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits> IListIterator<NodeType, Traits>::operator++(int)
+template<typename NodeType>
+IListIterator<NodeType> IListIterator<NodeType>::operator++(int)
 {
   IListIterator result(*this);
   advance();
   return result;
 }
 
-template<typename NodeType, typename Traits>
-IListIterator<NodeType, Traits> IListIterator<NodeType, Traits>::operator--(int)
+template<typename NodeType>
+IListIterator<NodeType> IListIterator<NodeType>::operator--(int)
 {
   IListIterator result(*this);
   retreat();
