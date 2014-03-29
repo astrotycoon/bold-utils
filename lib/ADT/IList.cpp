@@ -14,7 +14,7 @@ using namespace bold;
 // IListBase
 //===----------------------------------------------------------------------===//
 IListBase::IListBase()
-{
+  : m_Size(0) {
   m_pHead = new IListNodeBase();
   m_pHead->setPrev(m_pHead);
   m_pHead->setNext(m_pHead);
@@ -43,6 +43,7 @@ IListNodeBase* IListBase::getSentinel()
 void IListBase::swap(IListBase& pOther)
 {
   std::swap(m_pHead, pOther.m_pHead);
+  std::swap(m_Size, pOther.m_Size);
 }
 
 void IListBase::doInsert(IListNodeBase& pWhere, IListNodeBase& pNew)

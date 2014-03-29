@@ -33,6 +33,12 @@ public:
 
   virtual ~IListBase();
 
+  bool      empty()    const { return (0 == m_Size); }
+
+  size_type size()     const { return m_Size; }
+
+  size_type max_size() const { return size_type(-1); }
+
   void swap(IListBase& pOther);
 
 protected:
@@ -51,8 +57,13 @@ protected:
 
   void doErase(IListNodeBase& pWhere);
 
+  void countIn(unsigned int pN = 1) { m_Size += pN; }
+
+  void countOut(unsigned int pN = 1) { m_Size -= pN; }
 protected:
   mutable IListNodeBase* m_pHead;
+  unsigned int m_Size;
+
 };
 
 /** \class IList
@@ -91,17 +102,10 @@ public:
   typedef const NodeType& const_reference;
   typedef NodeType&       reference;
 
-protected:
-  unsigned int m_Size;
-
 public:
   IList() : IListBase() { }
 
   virtual ~IList() { clear(); }
-  
-  bool      empty()    const { return (0 == m_Size); }
-  size_type size()     const { return m_Size; }
-  size_type max_size() const { return size_type(-1); }
 
   const_iterator begin() const;
   iterator       begin();
@@ -222,7 +226,7 @@ template<typename NodeType> typename IList<NodeType>::iterator
 IList<NodeType>::insert(iterator pWhere, NodeType* pNew)
 {
   doInsert(*pWhere.getRawPtr(), *pNew);
-  ++m_Size;
+  countIn();
   return iterator(pNew);
 }
 
@@ -233,7 +237,7 @@ IList<NodeType>::erase(iterator pWhere)
   IListNodeBase* cur = pWhere.getRawPtr();
   IListNodeBase* next = pWhere.getRawPtr()->getNext();
   doErase(*cur);
-  --m_Size;
+  countOut();
   return iterator(next);
 }
 
