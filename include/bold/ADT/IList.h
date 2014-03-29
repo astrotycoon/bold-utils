@@ -57,9 +57,10 @@ protected:
 
   void doErase(IListNodeBase& pWhere);
 
-  void countIn(unsigned int pN = 1) { m_Size += pN; }
+  void doCountIn(unsigned int pN = 1) { m_Size += pN; }
 
-  void countOut(unsigned int pN = 1) { m_Size -= pN; }
+  void doCountOut(unsigned int pN = 1) { m_Size -= pN; }
+
 protected:
   mutable IListNodeBase* m_pHead;
   unsigned int m_Size;
@@ -226,7 +227,7 @@ template<typename NodeType> typename IList<NodeType>::iterator
 IList<NodeType>::insert(iterator pWhere, NodeType* pNew)
 {
   doInsert(*pWhere.getRawPtr(), *pNew);
-  countIn();
+  doCountIn();
   return iterator(pNew);
 }
 
@@ -237,7 +238,7 @@ IList<NodeType>::erase(iterator pWhere)
   IListNodeBase* cur = pWhere.getRawPtr();
   IListNodeBase* next = pWhere.getRawPtr()->getNext();
   doErase(*cur);
-  countOut();
+  doCountOut();
   return iterator(next);
 }
 
