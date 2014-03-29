@@ -13,34 +13,31 @@ using namespace bold;
 //===----------------------------------------------------------------------===//
 // IListBase
 //===----------------------------------------------------------------------===//
+IListBase::IListBase()
+{
+  m_pHead = new IListNodeBase();
+  m_pHead->setPrev(m_pHead);
+  m_pHead->setNext(m_pHead);
+}
+
+IListBase::~IListBase()
+{
+  delete getSentinel();
+}
+
 bool IListBase::isSentinel(const IListNodeBase& pNode)
 {
   return (&pNode == pNode.getNext());
 }
 
-const IListBase::Sentinel* IListBase::getSentinel() const
+const IListNodeBase* IListBase::getSentinel() const
 {
-  return static_cast<const Sentinel*>(head()->getPrev());
+  return head()->getPrev();
 }
 
-IListBase::Sentinel* IListBase::getSentinel()
+IListNodeBase* IListBase::getSentinel()
 {
-  return static_cast<Sentinel*>(head()->getPrev());
-}
-
-bool IListBase::empty() const
-{
-  return (0 == getSentinel()->size());
-}
-
-IListBase::size_type IListBase::size() const
-{
-  return getSentinel()->size();
-}
-
-IListBase::size_type IListBase::max_size() const
-{
-  return size_type(-1);
+  return head()->getPrev();
 }
 
 void IListBase::swap(IListBase& pOther)
@@ -62,8 +59,6 @@ void IListBase::doInsert(IListNodeBase& pWhere, IListNodeBase& pNew)
     setHead(&pNew);
 
   cur->setPrev(&pNew);
-
-  getSentinel()->countIn();
 }
 
 void IListBase::doErase(IListNodeBase& pWhere)
@@ -83,6 +78,4 @@ void IListBase::doErase(IListNodeBase& pWhere)
 
   cur->setPrev(NULL);
   cur->setNext(NULL);
-
-  getSentinel()->countOut();
 }

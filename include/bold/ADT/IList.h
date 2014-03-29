@@ -29,39 +29,17 @@ public:
   typedef ptrdiff_t difference_type;
 
 public:
-  IListBase() : m_pHead(new Sentinel()) { }
+  IListBase();
 
-  virtual ~IListBase() { delete getSentinel(); }
-
-  bool empty() const;
-
-  size_type size() const;
-
-  size_type max_size() const;
+  virtual ~IListBase();
 
   void swap(IListBase& pOther);
 
 protected:
-  class Sentinel : public IListNodeBase
-  {
-  public:
-    Sentinel() : IListNodeBase(this, this), m_Size(0) { }
-
-    unsigned int size() const { return m_Size; }
-
-    void countIn(unsigned int pN = 1) { m_Size += pN; }
-
-    void countOut(unsigned int pN = 1) { m_Size -= pN; }
-
-  private:
-    unsigned int m_Size;
-  };
-
-protected:
   static bool isSentinel(const IListNodeBase& pNode);
 
-  const Sentinel* getSentinel() const;
-  Sentinel*       getSentinel();
+  const IListNodeBase* getSentinel() const;
+  IListNodeBase*       getSentinel();
 
   const IListNodeBase* head() const { return m_pHead; }
   IListNodeBase* head()             { return m_pHead; }
@@ -99,6 +77,9 @@ template<typename NodeType>
 class IList : public IListBase 
 {
 public:
+  typedef size_t size_type;
+  typedef ptrdiff_t difference_type;
+
   typedef IListIterator<const NodeType> const_iterator;
   typedef IListIterator<NodeType>       iterator;
 
@@ -110,11 +91,18 @@ public:
   typedef const NodeType& const_reference;
   typedef NodeType&       reference;
 
+protected:
+  unsigned int m_Size;
+
 public:
   IList() : IListBase() { }
 
   virtual ~IList() { clear(); }
   
+  bool      empty()    const { return (0 == m_Size); }
+  size_type size()     const { return m_Size; }
+  size_type max_size() const { return size_type(-1); }
+
   const_iterator begin() const;
   iterator       begin();
   const_iterator end()   const;
@@ -206,28 +194,47 @@ template<typename NodeType>
 typename IList<NodeType>::const_reference IList<NodeType>::front() const
 {
   assert(!empty() && "Calling front() on empty list!");
-  return *static_cast<const NodeType*>(head());
+  return *static_cast<const_pointer>(head());
 }
 
 template<typename NodeType>
 typename IList<NodeType>::reference IList<NodeType>::front()
 {
   assert(!empty() && "Calling front() on empty list!");
-  return *static_cast<NodeType*>(head());
+  return *static_cast<pointer>(head());
 }
 
 template<typename NodeType>
 typename IList<NodeType>::const_reference IList<NodeType>::back() const
 {
   assert(!empty() && "Calling back() on empty list!");
-  return *static_cast<const NodeType*>(getSentinel()->getPrev());
+  return *static_cast<const_pointer>(getSentinel()->getPrev());
 }
 
 template<typename NodeType>
 typename IList<NodeType>::reference IList<NodeType>::back()
 {
   assert(!empty() && "Calling back() on empty list!");
-  return *static_cast<NodeType*>(getSentinel()->getPrev());
+  return *static_cast<pointer>(getSentinel()->getPrev());
+}
+
+template<typename NodeType> typename IList<NodeType>::iterator
+IList<NodeType>::insert(iterator pWhere, NodeType* pNew)
+{
+  doInsert(*pWhere.getRawPtr(), *pNew);
+  ++m_Size;
+  return iterator(pNew);
+}
+
+template<typename NodeType> typename IList<NodeType>::iterator
+IList<NodeType>::erase(iterator pWhere)
+{
+  assert(pWhere != end() && "Cannot remove end()");
+  IListNodeBase* cur = pWhere.getRawPtr();
+  IListNodeBase* next = pWhere.getRawPtr()->getNext();
+  doErase(*cur);
+  --m_Size;
+  return iterator(next);
 }
 
 template<typename NodeType>
@@ -255,23 +262,6 @@ void IList<NodeType>::pop_back()
   assert(!empty() && "pop_back() on an empty list");
   iterator it = end();
   erase(--it);
-}
-
-template<typename NodeType> typename IList<NodeType>::iterator
-IList<NodeType>::insert(iterator pWhere, NodeType* pNew)
-{
-  doInsert(*pWhere.getRawPtr(), *pNew);
-  return iterator(pNew);
-}
-
-template<typename NodeType> typename IList<NodeType>::iterator
-IList<NodeType>::erase(iterator pWhere)
-{
-  assert(pWhere != end() && "Cannot remove end()");
-  IListNodeBase* cur = pWhere.getRawPtr();
-  IListNodeBase* next = pWhere.getRawPtr()->getNext();
-  doErase(*cur);
-  return iterator(next);
 }
 
 template<typename NodeType>
