@@ -15,6 +15,7 @@ using namespace bold;
 
 namespace {
   struct IntNode : public IListNode<IntNode> {
+    using IListNode<IntNode>::Base;
     int value;
   };
 } // anonymous namespace
@@ -26,7 +27,7 @@ PAT_F(IListTest, default_constructor)
 {
   IList<IntNode> int_list;
 
-  ASSERT_TRUE(0 == int_list.size());
+  ASSERT_EQ(int_list.size(), 0);
   ASSERT_TRUE(int_list.empty());
 
   ASSERT_TRUE(int_list.begin() == int_list.end());
@@ -223,15 +224,15 @@ PAT_F( IListTest, swap_test)
   even_list.push_back(&y);
   even_list.push_back(&z);
 
-  ASSERT_TRUE(4 == prime_list.size());
-  ASSERT_TRUE(3 == even_list.size());
+  ASSERT_EQ(4, prime_list.size());
+  ASSERT_EQ(3, even_list.size());
 
   prime_list.swap(even_list);
 
-  ASSERT_TRUE(3 == prime_list.size());
-  ASSERT_TRUE(4 == even_list.size());
+  ASSERT_EQ(prime_list.size(), 3);
+  ASSERT_EQ(even_list.size(), 4);
 
-  ASSERT_TRUE(2 == prime_list.front().value);
+  ASSERT_EQ(prime_list.front().value, 2);
 }
 
 PAT_F( IListTest, insert_in_the_middle_test)
