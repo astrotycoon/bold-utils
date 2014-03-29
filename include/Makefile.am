@@ -47,6 +47,7 @@ nobase_include_HEADERS = \
   bold/Support/IOStream.h \
   bold/Support/MallocAllocator.h \
   bold/Support/ManagedStatic.h \
+  bold/Support/MemoryAllocator.h \
   bold/Support/MemoryPool.h \
   bold/Support/MsgHandler.h \
   bold/Support/MsgHandling.h \

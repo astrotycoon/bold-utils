@@ -19,6 +19,7 @@ UNITTEST=${abs_top_srcdir}/unittests
 BOLD_SOURCES += AllocatorsTest.cpp \
 	FourpleTest.cpp \
 	IListTest.cpp \
+	MemoryAllocatorTest.cpp \
 	MemoryPoolTest.cpp \
 	OStrStreamTest.cpp \
 	OwningPtrTest.cpp \
