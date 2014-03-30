@@ -26,9 +26,11 @@ public:
 public:
   inline StringList() { }
 
-  inline StringList(const StringList& pCopy) : BaseType(pCopy) { }
+  inline StringList(const StringList& pCopy);
 
   inline explicit StringList(StringRef pCopy) { append(pCopy); }
+
+  StringList& operator=(const StringList& pCopy);
 
   StringList& append(const StringRef& pStr);
 
