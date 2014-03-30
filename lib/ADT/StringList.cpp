@@ -24,26 +24,36 @@ StringList& StringList::operator=(const StringList& pList)
 
 StringList& StringList::append(const StringRef& pStr)
 {
+  StringRef* str = allocate();
+  construct(str, pStr);
   return *this;
 }
 
 StringList& StringList::append(const std::string& pStr)
 {
+  StringRef* str = allocate();
+  new (str) StringRef(pStr);
   return *this;
 }
 
 StringList& StringList::append(const char* pStr)
 {
+  StringRef* str = allocate();
+  new (str) StringRef(pStr);
   return *this;
 }
 
 StringList& StringList::operator<<(StringRef& pStr)
 {
+  StringRef* str = allocate();
+  new (str) StringRef(pStr);
   return *this;
 }
 
 StringList& StringList::operator<<(const std::string& pStr)
 {
+  StringRef* str = allocate();
+  new (str) StringRef(pStr);
   return *this;
 }
 
