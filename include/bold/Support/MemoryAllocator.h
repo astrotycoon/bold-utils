@@ -32,7 +32,7 @@ public:
   typedef DataType* pointer;
   typedef DataType& reference;
 
-  typedef Slab<DataType, Amount> slab;
+  typedef Slab<DataType, Amount> slab_type;
 
   template<typename NewDataType>
   struct rebind {
@@ -79,13 +79,13 @@ MemoryAllocator<DataType, Amount>::allocate()
 {
   unsigned int index = size() % Amount;
   doCountIn();
-  if (0 == index) { // slab full
-    slab* new_slab = new slab();
+  if (0 == index) { // slab_type full
+    slab_type* new_slab = new slab_type();
     doInsert(*getSentinel(), *new_slab);
     return new_slab->data;
   }
 
-  return static_cast<slab*>(IListBase::getSentinel()->getPrev())->data + index;
+  return static_cast<slab_type*>(IListBase::getSentinel()->getPrev())->data + index;
 }
 
 template<typename DataType, unsigned int Amount>
@@ -96,7 +96,7 @@ MemoryAllocator<DataType, Amount>::allocate(size_type pN)
 
   // lazy intialization
   if (empty()) {
-    slab* new_slab = new slab();
+    slab_type* new_slab = new slab_type();
     doInsert(*getSentinel(), *new_slab);
     doCountIn(pN);
     return new_slab->data;
@@ -104,7 +104,7 @@ MemoryAllocator<DataType, Amount>::allocate(size_type pN)
 
   // Overflow: can not allocate in the same slab
   if (pN > Amount - size() %Amount) {
-    slab* new_slab = new slab();
+    slab_type* new_slab = new slab_type();
     setOverflow(true);
     doInsert(*getSentinel(), *new_slab);
     doCountIn(pN + Amount - size() % Amount);
@@ -112,7 +112,7 @@ MemoryAllocator<DataType, Amount>::allocate(size_type pN)
   }
 
   unsigned int head = IListBase::size() % size();
-  return static_cast<slab*>(IListBase::getSentinel()->getPrev())->data + head;
+  return static_cast<slab_type*>(IListBase::getSentinel()->getPrev())->data + head;
 }
 
 template<typename DataType, unsigned int Amount> void
