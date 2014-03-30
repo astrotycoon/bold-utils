@@ -30,7 +30,7 @@ class MemoryAllocator : public IListBase
 public:
   typedef DataType value_type;
   typedef DataType* pointer;
-  typedef DataType& reference;
+  typedef const DataType& const_reference;
 
   typedef Slab<DataType, Amount> slab_type;
 
@@ -52,7 +52,7 @@ public:
 
   /// construct - to construct an element object on the location of pointed by
   /// pPtr
-  void construct(pointer pPtr, reference pVal);
+  void construct(pointer pPtr, const_reference pVal);
 
   /// overflow - true if number of data being allocated is more than
   /// size of a block
@@ -116,7 +116,7 @@ MemoryAllocator<DataType, Amount>::allocate(size_type pN)
 }
 
 template<typename DataType, unsigned int Amount> void
-MemoryAllocator<DataType, Amount>::construct(pointer pPtr, reference pVal)
+MemoryAllocator<DataType, Amount>::construct(pointer pPtr, const_reference pVal)
 {
   new (pPtr) DataType(pVal);
 }
