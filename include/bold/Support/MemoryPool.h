@@ -9,63 +9,13 @@
 #ifndef BOLD_ADT_MEMORY_POOL_H
 #define BOLD_ADT_MEMORY_POOL_H
 #include <bold/ADT/TypeTraits.h>
-#include <bold/ADT/IList.h>
-#include <bold/Support/Slab.h>
+#include <bold/Support/MemoryAllocator.h>
 #include <bold/Support/SlabIterator.h>
 
 #include <cassert>
 #include <iterator>
 
 namespace bold {
-
-/** \class MemoryAllocator
- *  \brief MemoryAllocator allocates numerous small objects.
- *
- *  MemoryAllocator is a memory pool allocator. It preallocates a number
- *  of memory blocks to avoid the system from memory fragmentation.
- *
- *  MemoryAllocator doesn't provide deallocator. Users should design his own
- *  deallocators. That is because the implementation of deallocators need
- *  very careful consideration of trade-offs between speed and memory usage.
- */
-template<typename DataType, unsigned int Amount>
-class MemoryAllocator : public IListBase
-{
-public:
-  typedef DataType value_type;
-  typedef const DataType* const_pointer;
-  typedef DataType* pointer;
-  typedef const DataType& const_reference;
-  typedef DataType& reference;
-
-  typedef Slab<DataType, Amount> slab_type;
-
-  template<typename NewDataType>
-  struct rebind {
-    typedef MemoryAllocator<NewDataType, Amount> other;
-  };
-
-public:
-  MemoryAllocator();
-
-  virtual ~MemoryAllocator() { }
-
-  /// allocate - to allocate one datum.
-  pointer allocate();
-
-  /// allocate - to allocate multiple data
-  pointer allocate(size_type pN);
-
-  /// construct - to construct an element object on the location of pointed by
-  /// pPtr
-  void construct(pointer pPtr, const_reference pVal);
-
-protected:
-  void AppendSlab(IListNodeBase& pSlab);
-
-  void PrependSlab(IListNodeBase& pSlab);
-
-};
 
 /** \class MemoryPool
  *  \brief MemoryPool provides a factory that guaratees to remove all allocated
@@ -89,17 +39,17 @@ class MemoryPool : public MemoryAllocator<DataType, Amount>
 {
 public:
   typedef MemoryAllocator<DataType, Amount> Alloc;
-  typedef typename Alloc::value_type value_type;
-  typedef typename Alloc::const_pointer const_pointer;
-  typedef typename Alloc::pointer pointer;
-  typedef typename Alloc::const_reference const_reference;
-  typedef typename Alloc::reference reference;
+
+  typedef DataType        value_type;
+  typedef const DataType* const_pointer;
+  typedef DataType*       pointer;
+  typedef const DataType& const_reference;
+  typedef DataType&       reference;
+
   typedef typename Alloc::slab_type slab_type;
 
-  typedef SlabIterator<MemoryPool,
-                       NonConstTraits<DataType> > iterator;
-  typedef SlabIterator<MemoryPool,
-                       ConstTraits<DataType> > const_iterator;
+  typedef SlabIterator<MemoryPool> iterator;
+  typedef SlabIterator<const MemoryPool> const_iterator;
 
   typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
   typedef std::reverse_iterator<iterator>       reverse_iterator;
@@ -111,10 +61,6 @@ public:
 
 public:
   MemoryPool();
-
-  MemoryPool(const MemoryPool& pCopy);
-
-  MemoryPool& operator=(const MemoryPool& pCopy);
 
   virtual ~MemoryPool();
 
@@ -139,82 +85,13 @@ public:
   using Alloc::size;
   using Alloc::max_size;
 
-protected:
-  friend class SlabIterator<MemoryPool, NonConstTraits<DataType> >;
-  friend class SlabIterator<MemoryPool, ConstTraits<DataType> >;
+  using Alloc::head;
+  using Alloc::tail;
 
 protected:
-  using Alloc::head;
   using Alloc::getSentinel;
 
 };
-
-//===----------------------------------------------------------------------===//
-// MemoryAllocator
-//===----------------------------------------------------------------------===//
-template<typename DataType, unsigned int Amount>
-MemoryAllocator<DataType, Amount>::MemoryAllocator()
-  : IListBase() {
-}
-
-template<typename DataType, unsigned int Amount>
-typename MemoryAllocator<DataType, Amount>::pointer
-MemoryAllocator<DataType, Amount>::allocate()
-{
-  unsigned int index = size() % Amount;
-  IListBase::getSentinel()->countIn();
-  if (0 == index) { // slab full
-    slab_type* new_slab = new slab_type();
-    AppendSlab(*new_slab);
-    return new_slab->data;
-  }
-
-  return static_cast<slab_type*>(IListBase::getSentinel()->getPrev())->data + index;
-}
-
-template<typename DataType, unsigned int Amount>
-typename MemoryAllocator<DataType, Amount>::pointer
-MemoryAllocator<DataType, Amount>::allocate(size_type pN)
-{
-  assert(pN <= Amount && "allocate too many data");
-
-  // lazy intialization
-  if (IListBase::empty()) {
-    slab_type* new_slab = new slab_type();
-    AppendSlab(*new_slab);
-    IListBase::getSentinel()->countIn(pN);
-    return new_slab->data;
-  }
-
-  // can not allocate in the same slab
-  if (Amount - pN < IListBase::size() %Amount) {
-    slab_type* new_slab = new slab_type();
-    AppendSlab(*new_slab);
-    IListBase::getSentinel()->countIn(pN + Amount - size()%Amount);
-    return new_slab->data;
-  }
-
-  unsigned int head = IListBase::getSentinel()->size() % size();
-  return static_cast<slab_type*>(IListBase::getSentinel()->getPrev())->data + head;
-}
-
-template<typename DataType, unsigned int Amount> void
-MemoryAllocator<DataType, Amount>::construct(pointer pPtr, const_reference pVal)
-{
-  new (pPtr) DataType(pVal);
-}
-
-template<typename DataType, unsigned int Amount>
-void MemoryAllocator<DataType, Amount>::AppendSlab(IListNodeBase& pValue)
-{
-  doInsert(*IListBase::getSentinel(), pValue);
-}
-
-template<typename DataType, unsigned int Amount>
-void MemoryAllocator<DataType, Amount>::PrependSlab(IListNodeBase& pValue)
-{
-  doInsert(*IListBase::head(), pValue);
-}
 
 //===----------------------------------------------------------------------===//
 // MemoryPool
@@ -222,31 +99,6 @@ void MemoryAllocator<DataType, Amount>::PrependSlab(IListNodeBase& pValue)
 template<typename DataType, unsigned int Amount>
 MemoryPool<DataType, Amount>::MemoryPool()
   : Alloc() {
-}
-
-template<typename DataType, unsigned int Amount>
-MemoryPool<DataType, Amount>::MemoryPool(const MemoryPool& pCopy)
-  : Alloc() {
-  const_iterator data, dEnd = pCopy.end();
-  for (data = pCopy.begin(); data != dEnd; ++data) {
-    DataType* new_data = Alloc::allocate();
-    Alloc::construct(new_data, *data);
-  }
-}
-
-template<typename DataType, unsigned int Amount>
-MemoryPool<DataType, Amount>&
-MemoryPool<DataType, Amount>::operator=(const MemoryPool& pCopy)
-{
-  clear();
-
-  const_iterator data, dEnd = pCopy.end();
-  for (data = pCopy.begin(); data != dEnd; ++data) {
-    DataType* new_data = Alloc::allocate();
-    Alloc::construct(new_data, *data);
-  }
-
-  return *this;
 }
 
 template<typename DataType, unsigned int Amount>
@@ -259,31 +111,28 @@ template<typename DataType, unsigned int Amount>
 typename MemoryPool<DataType, Amount>::const_iterator
 MemoryPool<DataType, Amount>::begin() const
 {
-  IListNodeBase* node = const_cast<IListNodeBase*>(Alloc::head());
-  return const_iterator(*Alloc::getSentinel(), node, 0);
+  return const_iterator(*this, Alloc::head(), 0);
 }
 
 template<typename DataType, unsigned int Amount>
 typename MemoryPool<DataType, Amount>::iterator
 MemoryPool<DataType, Amount>::begin()
 {
-  return iterator(*Alloc::getSentinel(), Alloc::head(), 0);
+  return iterator(*this, Alloc::head(), 0);
 }
 
 template<typename DataType, unsigned int Amount>
 typename MemoryPool<DataType, Amount>::const_iterator
 MemoryPool<DataType, Amount>::end() const
 {
-  typename Alloc::Sentinel* node =
-                    const_cast<typename Alloc::Sentinel*>(Alloc::getSentinel());
-  return const_iterator(*Alloc::getSentinel(), node, -1);
+  return const_iterator(*this, Alloc::getSentinel(), -1);
 }
 
 template<typename DataType, unsigned int Amount>
 typename MemoryPool<DataType, Amount>::iterator
 MemoryPool<DataType, Amount>::end()
 {
-  return iterator(*Alloc::getSentinel(), Alloc::getSentinel(), -1);
+  return iterator(*this, Alloc::getSentinel(), -1);
 }
 
 template<typename DataType, unsigned int Amount>

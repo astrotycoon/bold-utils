@@ -9,7 +9,7 @@
 #ifndef BOLD_SUPPORT_SLAB_ITERATOR_H
 #define BOLD_SUPPORT_SLAB_ITERATOR_H
 #include <bold/Support/DataTypes.h>
-#include <bold/ADT/IListIterator.h>
+#include <iterator>
 
 namespace bold {
 
@@ -17,25 +17,24 @@ namespace bold {
  *
  *  SlabIterator is a bidirectional iterator.
  */
-template<typename Container, typename Traits>
-class SlabIterator : public IListIteratorBase
+template<typename Container>
+class SlabIterator
+  : public std::iterator<std::bidirectional_iterator_tag,
+                         typename Container::value_type>
 {
 public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef typename Container::Sentinel    sentinel_type;
-  typedef typename Container::value_type  value_type;
-  typedef typename Traits::pointer        pointer;
-  typedef typename Traits::reference      reference;
+  typedef std::iterator<std::bidirectional_iterator_tag,
+                         typename Container::value_type> super;
+  typedef typename super::reference reference;
+  typedef typename super::pointer   pointer;
+  typedef typename super::difference_type difference_type;
 
-  typedef typename Traits::template
-  rebind<typename Container::slab_type>::other::value_type slab_type;
+  typedef typename Container::slab_type slab_type;
 
 public:
   SlabIterator();
 
-  SlabIterator(const sentinel_type& pSentinel,
-               IListNodeBase* pSlab,
-               unsigned int pIdx);
+  SlabIterator(Container& pContainer, IListNodeBase* pNode, unsigned int pIdx);
 
   reference operator* () const;
   pointer   operator->() const;
@@ -49,6 +48,10 @@ public:
   bool operator!=(const SlabIterator& pOther) const;
 
 private:
+  void advance() { m_pSlab = m_pSlab->getNext(); }
+
+  void retreat() { m_pSlab = m_pSlab->getPrev(); }
+
   void forward();
 
   void backward();
@@ -68,106 +71,55 @@ private:
   template<class T> void operator-(T) const;
 
 private:
-  const sentinel_type* m_pSentinel;
+  Container* m_pContainer;
+  IListNodeBase* m_pSlab;
   unsigned int m_Idx;
 };
 
 //===----------------------------------------------------------------------===//
 // SlabIterator Member Functions
 //===----------------------------------------------------------------------===//
-template<typename Container, typename Traits>
-SlabIterator<Container, Traits>::SlabIterator()
-  : IListIteratorBase(), m_pSentinel(NULL), m_Idx(-1) {
+template<typename Container>
+SlabIterator<Container>::SlabIterator()
+  : m_pContainer(NULL), m_pSlab(NULL), m_Idx(-1) {
 }
 
-template<typename Container, typename Traits>
-SlabIterator<Container, Traits>::SlabIterator(const sentinel_type& pSentinel,
-                                              IListNodeBase* pSlab,
-                                              unsigned int pIdx)
-  : IListIteratorBase(pSlab), m_pSentinel(&pSentinel), m_Idx(pIdx) {
+template<typename Container>
+SlabIterator<Container>::SlabIterator(Container& pContainer,
+                                      IListNodeBase* pSlab,
+                                      unsigned int pIdx)
+  : m_pContainer(&pContainer), m_pSlab(pSlab), m_Idx(pIdx) {
 }
 
-template<typename Container, typename Traits>
-typename SlabIterator<Container, Traits>::reference
-SlabIterator<Container, Traits>::operator* () const
+template<typename Container>
+typename SlabIterator<Container>::reference
+SlabIterator<Container>::operator* () const
 {
-  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
-         "Cannot derefer a NULL pointer");
-  assert((unsigned int)-1 != m_Idx && "Cannot derefer end()");
-
-  return static_cast<slab_type*>(m_pNodePtr)->data[m_Idx];
+  assert(NULL != m_pContainer && "Cannot derefer a NULL pointer");
+  slab_type* slab = static_cast<slab_type*>(m_pSlab);
+  return slab->data[m_Idx];
 }
 
-template<typename Container, typename Traits>
-typename SlabIterator<Container, Traits>::pointer
-SlabIterator<Container, Traits>::operator->() const
+template<typename Container>
+typename SlabIterator<Container>::pointer
+SlabIterator<Container>::operator->() const
 {
-  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
-         "Cannot derefer a NULL pointer");
-  assert((unsigned int)-1 != m_Idx && "Cannot derefer end()");
-
-  return static_cast<pointer>(static_cast<slab_type*>(m_pNodePtr)->data + m_Idx);
+  assert(NULL != m_pContainer && "Cannot derefer a NULL pointer");
+  slab_type* slab = static_cast<slab_type*>(m_pSlab);
+  return (slab->data + m_Idx);
 }
 
-template<typename Container, typename Traits>
-SlabIterator<Container, Traits>& SlabIterator<Container, Traits>::operator++()
+template<typename Container>
+void SlabIterator<Container>::forward()
 {
-  forward();
-  return *this;
-}
-
-template<typename Container, typename Traits>
-SlabIterator<Container, Traits>& SlabIterator<Container, Traits>::operator--()
-{
-  backward();
-  return *this;
-}
-
-template<typename Container, typename Traits>
-SlabIterator<Container, Traits> SlabIterator<Container, Traits>::operator++(int)
-{
-  SlabIterator result(*this);
-  forward();
-  return result;
-}
-
-template<typename Container, typename Traits>
-SlabIterator<Container, Traits> SlabIterator<Container, Traits>::operator--(int)
-{
-  SlabIterator result(*this);
-  backward();
-  return result;
-}
-
-template<typename Container, typename Traits> bool
-SlabIterator<Container, Traits>::operator==(const SlabIterator& pOther) const
-{
-  return (m_pSentinel == pOther.m_pSentinel &&
-          m_pNodePtr == pOther.m_pNodePtr &&
-          m_Idx == pOther.m_Idx);
-}
-
-template<typename Container, typename Traits> bool
-SlabIterator<Container, Traits>::operator!=(const SlabIterator& pOther) const
-{
-  return !(*this == pOther);
-}
-
-template<typename Container, typename Traits>
-void SlabIterator<Container, Traits>::forward()
-{
-  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
-         "trivial iterator can not forward");
-
-  assert(m_pNodePtr != m_pSentinel && -1 != m_Idx &&
-         "end() iterator can not forward");
+  assert(NULL != m_pContainer && "trivial iterator can not forward");
 
   // move one step.
   m_Idx = (m_Idx + 1) % slab_type::max_size;
 
   // if I'm at the rear of the container, then go to the end
-  if (m_pNodePtr == m_pSentinel->getPrev() &&
-      m_Idx == m_pSentinel->size() % slab_type::max_size) {
+  if (m_pSlab == m_pContainer->tail() &&
+      m_Idx == m_pContainer->size() % slab_type::max_size) {
     advance();
     m_Idx = -1;
     return;
@@ -179,23 +131,19 @@ void SlabIterator<Container, Traits>::forward()
   }
 }
 
-template<typename Container, typename Traits>
-void SlabIterator<Container, Traits>::backward()
+template<typename Container>
+void SlabIterator<Container>::backward()
 {
-  assert(NULL != m_pSentinel && NULL != m_pNodePtr &&
-         "trivial iterator can not backward");
-
-  assert(m_pNodePtr != m_pSentinel && -1 != m_Idx &&
-         "rend() iterator can not backward");
+  assert(NULL != m_pContainer && "trivial iterator can not backward");
 
   // if I'm at the front of the container, then go to the rend()
-  if (m_pSentinel == m_pNodePtr->getPrev() && 0 == m_Idx) {
+  if (m_pSlab == m_pContainer->head() && 0 == m_Idx) {
     retreat();
     m_Idx = -1;
     return;
   }
 
-  // otherwise, if I'm at the front of a slab, then go to the previous slab
+  // otherwise, if I'm at the front of a slab_type, then go to the previous slab
   if (0 == m_Idx) {
     retreat();
     m_Idx = slab_type::max_size - 1;
@@ -204,6 +152,50 @@ void SlabIterator<Container, Traits>::backward()
 
   // the rest, move back one step.
   --m_Idx;
+}
+
+template<typename Container>
+SlabIterator<Container>& SlabIterator<Container>::operator++()
+{
+  forward();
+  return *this;
+}
+
+template<typename Container>
+SlabIterator<Container>& SlabIterator<Container>::operator--()
+{
+  backward();
+  return *this;
+}
+
+template<typename Container>
+SlabIterator<Container> SlabIterator<Container>::operator++(int)
+{
+  SlabIterator result(*this);
+  forward();
+  return result;
+}
+
+template<typename Container>
+SlabIterator<Container> SlabIterator<Container>::operator--(int)
+{
+  SlabIterator result(*this);
+  backward();
+  return result;
+}
+
+template<typename Container> bool
+SlabIterator<Container>::operator==(const SlabIterator& pOther) const
+{
+  return (m_pContainer == pOther.m_pContainer &&
+          m_pSlab == pOther.m_pSlab &&
+          m_Idx == pOther.m_Idx);
+}
+
+template<typename Container> bool
+SlabIterator<Container>::operator!=(const SlabIterator& pOther) const
+{
+  return !(*this == pOther);
 }
 
 } // namespace bold
