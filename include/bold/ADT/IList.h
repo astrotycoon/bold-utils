@@ -33,7 +33,7 @@ public:
 
   virtual ~IListBase();
 
-  bool      empty()    const { return (0 == m_Size); }
+  bool empty() const { return (0 == m_Size); }
 
   size_type size()     const { return m_Size; }
 
