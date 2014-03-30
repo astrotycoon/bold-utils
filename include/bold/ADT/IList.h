@@ -50,6 +50,9 @@ protected:
   const IListNodeBase* head() const { return m_pHead; }
   IListNodeBase* head()             { return m_pHead; }
 
+  const IListNodeBase* tail() const { return getSentinel()->getPrev(); }
+  IListNodeBase* tail()             { return getSentinel()->getPrev(); }
+
   void setHead(IListNodeBase* pHead) { m_pHead = pHead; }
 
   /// doInsert inserts @ref pNew at the front of @ref pWhere
