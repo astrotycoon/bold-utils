@@ -29,8 +29,10 @@ class MemoryAllocator : public IListBase
 {
 public:
   typedef DataType value_type;
-  typedef DataType* pointer;
+  typedef const DataType* const_pointer;
   typedef const DataType& const_reference;
+  typedef DataType* pointer;
+  typedef DataType& reference;
 
   typedef Slab<DataType, Amount> slab_type;
 
