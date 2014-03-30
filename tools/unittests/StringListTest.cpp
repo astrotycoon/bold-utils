@@ -14,6 +14,13 @@ using namespace bold;
 //===----------------------------------------------------------------------===//
 // Testcases
 //===----------------------------------------------------------------------===//
+PAT_F(StringListCase, init_test)
+{
+  StringList list;
+  ASSERT_EQ(list.size(), 0);
+  ASSERT_TRUE(list.empty());
+}
+
 PAT_F(StringListCase, size_test)
 {
   StringRef a("a");
