@@ -1,0 +1,5 @@
+Bold, an optimizing linker designed to support _whole-program analysis_ and _optimization_ by providing **fine-grained intermediate representations (IRs)** of linker commands and program modules. On the whole, there has been relatively little progress in the development of linkers. The prime causes are (1) the high complexity of linker commands, and (2) lack of fine-grained IRs for transformation and optimization. To address these issues, Bold provides two layers of IRs:
+  * a _tree structure of input files_ representing complex linker command language, and
+  * _a graph representing the relations among code and data_ found within input objects.
+
+The tree-based IR speeds up linking by saving unnecessary bookkeepings and input file operations; the graph-based IR enables optimizing algorithms by marking up use-define relations among all modules.
